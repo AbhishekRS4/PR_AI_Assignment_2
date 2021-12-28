@@ -20,13 +20,10 @@ class decisionTree:
             sys.exit(1)
 
         self.n_features = len(data[0]) -1
-        self.classIntMaping = {}
-        self.tree = None
-        self.values_per_bin = [len(data) / bins[i] for i in range(self.n_features)]
-        self.originalData = data
 
         if isinstance(bins,int):
-            n_bins = [bins for x in range(self.n_features)]
+            x = bins
+            bins = [x for i in range(self.n_features)]
         elif isinstance(bins,list):
             if len(bins) > self.n_features:
                 print("List of bins is longer than number of features") 
@@ -36,6 +33,11 @@ class decisionTree:
         else:
             print("Bin variable has wrong type") 
             sys.exit(1)
+
+        self.classIntMaping = {}
+        self.tree = None
+        self.values_per_bin = [len(data) / bins[i] for i in range(self.n_features)]
+        self.originalData = data
         self.data = self.dataToSymbolic(self.originalData,bins)
 
         self.allFeatures = [ [] for x in range(self.n_features)]
@@ -104,6 +106,9 @@ class decisionTree:
                         dataBranch1.append(instance)
                     else:
                         dataBranch2.append(instance)
+
+                if len(dataBranch1) or len(dataBranch2) == 0:
+                    continue
                 entropy = self.calculateEntropy(dataBranch1) + self.calculateEntropy(dataBranch2) 
                 if entropy < minEntropy:
                     minEntropy = entropy
@@ -123,8 +128,10 @@ class decisionTree:
             rightBranch = self.splitBranchRec(dataBranch2, newFeatures)
             return [featureMinEntropy,valueMinEntropy, leftBranch,rightBranch]
         else:
-            print("already pure(?)")
-            sys.exit(1)
+            #there is no feature that can split the data at this point
+            return max(set(labels), key=labels.count)
+
+
 
     def classifyRec(self, currentTree,vector):
         if isinstance(currentTree,int):
