@@ -37,10 +37,10 @@ def compute_classification_metrics(y_true, y_pred):
     cm = confusion_matrix(y_true, y_pred)
     f1 = f1_score(y_true, y_pred, average="weighted")
     print("----------------------")
-    print("classification Metrics")
+    print("classification metrics")
     print("----------------------")
-    print(f"accuracy : {acc}")
-    print(f"f1 score : {f1}")
+    print(f"accuracy : {acc:.4f}")
+    print(f"f1 score : {f1:.4f}")
     print("confustion matrix")
     print(cm)
     return
