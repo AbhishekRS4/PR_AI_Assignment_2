@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy as np
+import pandas as pd
 
 class ImageDatasetLoader:
     """
@@ -108,3 +109,28 @@ class ImageDatasetLoader:
 
         self.images = np.array(list_all_images)
         self.labels = np.array(list_all_labels)
+
+class ImageFeaturesDataset:
+    """
+    ImageFeaturesDataset class to convert image features numpy array to pandas DataFrame
+
+    Attributes
+    ----------
+    image_features : pandas DataFrame
+        image features converted to pandas DataFrame from ndarray
+    labels : pandas DataFrame
+        labels converted to pandas DataFrame from ndarray
+
+    Methods
+    -------
+    convert_dataset() : converts all the image features and labels as pandas DataFrame
+    """
+    def __init__(self, image_features, labels):
+        self.image_features = image_features
+        self.labels = labels
+
+    def convert_dataset(self):
+        feats_columns = ["feat_" + str(index) for index in range(self.image_features.shape[1])]
+        label_column = ["label"]
+        self.image_features = pd.DataFrame(self.image_features, columns=feats_columns)
+        self.labels = pd.DataFrame(self.labels, columns=label_column)
