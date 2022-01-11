@@ -1,9 +1,10 @@
 import numpy as np
 from sklearn.pipeline import Pipeline
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 
 
@@ -24,9 +25,17 @@ def get_tfidf_transformer():
     tfidf_transformer = TfidfTransformer()
     return tfidf_transformer
 
-def get_logistic_regression_model(max_iter=100):
-    log_reg = LogisticRegression(max_iter=max_iter)
-    return log_reg
+def get_logistic_regression_classifier(max_iter=100):
+    clf_log_reg = LogisticRegression(max_iter=max_iter)
+    return clf_log_reg
+
+def get_knn_classifier():
+    clf_knn = KNeighborsClassifier()
+    return clf_knn
+
+def get_grid_search_classifier(estimator, param_grid, cv=5, scoring="f1"):
+    grid_search_cv = GridSearchCV(estimator, param_grid, cv=cv, scoring=scoring)
+    return grid_search_cv
 
 def get_learning_pipeline(pipeline_list):
     learning_pipeline = Pipeline(pipeline_list)
