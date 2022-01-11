@@ -1,16 +1,29 @@
 import cv2
 import numpy as np
 
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import MiniBatchKMeans, AgglomerativeClustering
 
-class SIFTFeatureExtractor:
-    def __init__(self, train_images, num_visual_words=100, k_means_batch_size=128):
+class SIFTBagofVisualWordsFeatureExtractor:
+    def __init__(self, train_images, clustering_method="kmeans", num_visual_words=100):
+        """
+        SIFTFeatureExtractor class to create Bag of Visual Words features
+
+        Attributes
+        ----------
+        train_images : ndarray
+            N images
+        clustering_method : str (default=kmeans) (options=["kmeans", "hierarchical"])
+            clustering method to be used for creating bag of visual words features
+        num_visual_words : int
+            number of visual words to use for creating bag of visual words features
+        """
         self.train_images = train_images
         self.num_train_images = len(self.train_images)
         self.num_visual_words = num_visual_words
+        self.clustering_method = clustering_method.lower()
 
-        self.k_means_batch_size = k_means_batch_size
-        self.k_means = None
+        self.k_means_batch_size = 128
+        self.clustering_algo = None
 
         self.sift = None
         self.train_image_descriptors = []
@@ -30,11 +43,16 @@ class SIFTFeatureExtractor:
 
         self.all_train_descriptors = all_train_descriptors.astype(np.float64)
 
-    def init_k_means(self):
-        self.k_means = MiniBatchKMeans(n_clusters=self.num_visual_words, batch_size=self.k_means_batch_size)
+    def init_clustering(self):
+        if self.clustering_method == "kmeans":
+            self.clustering_algo = MiniBatchKMeans(n_clusters=self.num_visual_words, batch_size=self.k_means_batch_size)
+        elif self.clustering_method == "hierarchical":
+            self.clustering_algo = AgglomerativeClustering(n_clusters=self.num_visual_words)
+        else:
+            print(f"wrong argument passed entered for {self.clustering_method}")
 
-    def fit_k_means_on_train_set(self):
-        self.k_means.fit(self.all_train_descriptors)
+    def fit_clustering_on_train_set(self):
+        self.clustering_algo.fit(self.all_train_descriptors)
 
     def get_train_image_histograms(self):
         train_histograms = np.zeros((self.num_train_images, self.num_visual_words), dtype=np.float32)
@@ -42,7 +60,7 @@ class SIFTFeatureExtractor:
         for image_index in range(self.num_train_images):
             train_desc = self.train_image_descriptors[image_index].astype(np.float64)
             for desc_index in range(len(train_desc)):
-                visual_word_index = self.k_means.predict([train_desc[desc_index]])
+                visual_word_index = self.clustering_algo.predict([train_desc[desc_index]])
                 train_histograms[image_index, visual_word_index] += 1
         return train_histograms
 
@@ -55,6 +73,6 @@ class SIFTFeatureExtractor:
             kp, test_desc = self.sift.detectAndCompute(image, None)
 
             for desc_index in range(len(test_desc)):
-                visual_word_index = self.k_means.predict([test_desc[desc_index].astype(np.float64)])
+                visual_word_index = self.clustering_algo.predict([test_desc[desc_index].astype(np.float64)])
                 test_histograms[image_index, visual_word_index] += 1
         return test_histograms
