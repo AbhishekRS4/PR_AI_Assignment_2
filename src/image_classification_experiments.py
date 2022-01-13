@@ -26,6 +26,7 @@ def do_cv_image_classification(dir_bovw_data="bovw_features_data/", which_classi
             "base_estimator__max_depth" : np.arange(4, 13),
             "base_estimator__min_samples_split" : np.arange(2, 5),
             "n_estimators" : np.arange(15, 155, 5),
+            "learning_rate" : [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1],
         }
     else:
         print(f"wrong option : {which_classifier}")
