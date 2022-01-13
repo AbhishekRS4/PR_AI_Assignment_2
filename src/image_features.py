@@ -12,7 +12,7 @@ class SIFTBagofVisualWordsFeatureExtractor:
         ----------
         train_images : ndarray
             N images
-        clustering_method : str (default=kmeans) (options=["kmeans", "hierarchical"])
+        clustering_method : str (default=kmeans) (options=["kmeans"])
             clustering method to be used for creating bag of visual words features
         num_visual_words : int
             number of visual words to use for creating bag of visual words features
@@ -46,8 +46,6 @@ class SIFTBagofVisualWordsFeatureExtractor:
     def init_clustering(self):
         if self.clustering_method == "kmeans":
             self.clustering_algo = MiniBatchKMeans(n_clusters=self.num_visual_words, batch_size=self.k_means_batch_size)
-        elif self.clustering_method == "hierarchical":
-            self.clustering_algo = AgglomerativeClustering(n_clusters=self.num_visual_words)
         else:
             print(f"wrong argument passed entered for {self.clustering_method}")
 
