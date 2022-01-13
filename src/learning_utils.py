@@ -1,5 +1,7 @@
 import numpy as np
 from sklearn.pipeline import Pipeline
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfTransformer
@@ -29,9 +31,21 @@ def get_logistic_regression_classifier(max_iter=100):
     clf_log_reg = LogisticRegression(max_iter=max_iter)
     return clf_log_reg
 
-def get_knn_classifier():
-    clf_knn = KNeighborsClassifier()
+def get_knn_classifier(n_neighbors=None):
+    if n_neighbors is None:
+        clf_knn = KNeighborsClassifier()
+    else:
+        clf_knn = KNeighborsClassifier(n_neighbors=n_neighbors)
     return clf_knn
+
+def get_adaboost_classifier(n_estimators=None, criterion=None, splitter=None, max_depth=None, min_samples_split=None):
+    if n_estimators is None:
+        clf_dt = DecisionTreeClassifier(random_state=4)
+        clf_adaboost = AdaBoostClassifier(clf_dt, random_state=4)
+    else:
+        clf_dt = DecisionTreeClassifier(criterion=criterion, splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split)
+        clf_adaboost = AdaBoostClassifier(clf_dt, n_estimators=n_estimators, random_state=random_state)
+    return clf_adaboost
 
 def get_grid_search_classifier(estimator, param_grid, cv=5):
     scoring_func = make_scorer(accuracy_score)
