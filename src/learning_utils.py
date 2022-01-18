@@ -67,12 +67,12 @@ def get_accuracy_scoring_fn():
 
 def compute_classification_metrics_test_data(y_true, y_pred, y_pred_probs):
     acc = accuracy_score(y_true, y_pred)
-    cm = confusion_matrix(y_true, y_pred)
-    f1 = f1_score(y_true, y_pred, average="samples")
+    f1 = f1_score(y_true, y_pred, average="weighted")
     roc_auc = roc_auc_score(y_true, y_pred_probs, multi_class="ovr")
-    return acc, cm, f1, roc_auc
+    cm = confusion_matrix(y_true, y_pred)
+    return acc, f1, roc_auc, cm
 
-def print_classification_metrics(acc, f1, cm, roc_auc):
+def print_classification_metrics(acc, f1, roc_auc, cm):
     print("----------------------")
     print("classification metrics")
     print("----------------------")
@@ -81,4 +81,5 @@ def print_classification_metrics(acc, f1, cm, roc_auc):
     print(f"roc auc : {roc_auc:.4f}")
     print("confustion matrix")
     print(cm)
+    print()
     return
