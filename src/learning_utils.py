@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.pipeline import Pipeline
+from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -31,6 +32,10 @@ def get_logistic_regression_classifier(max_iter=100):
     clf_log_reg = LogisticRegression(max_iter=max_iter)
     return clf_log_reg
 
+def get_gaussian_nb_classifier():
+    clf_gaussian_nb = GaussianNB()
+    return clf_gaussian_nb
+
 def get_knn_classifier(n_neighbors=None, metric=None, weights=None):
     if n_neighbors is None:
         clf_knn = KNeighborsClassifier()
@@ -55,6 +60,10 @@ def get_grid_search_classifier(estimator, param_grid, cv=5):
 def get_learning_pipeline(pipeline_list):
     learning_pipeline = Pipeline(pipeline_list)
     return learning_pipeline
+
+def get_accuracy_scoring_fn():
+    acc_scoring_fn = make_scorer(accuracy_score)
+    return acc_scoring_fn
 
 def compute_classification_metrics_test_data(y_true, y_pred, y_pred_probs):
     acc = accuracy_score(y_true, y_pred)
