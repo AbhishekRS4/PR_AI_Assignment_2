@@ -54,7 +54,6 @@ class decisionTree:
         for i in range(len(self.originalData)):
             if value > self.originalData[i][feature]:
                 rank +=1
-            
         return (int)(rank / self.values_per_bin[feature])
 
     def  dataToSymbolic(self,data, bins):
@@ -68,9 +67,7 @@ class decisionTree:
                 self.classIntMaping[vector[-1]] = n_classes
                 n_classes +=1
             symbolic_data[i].append(self.classIntMaping.get(vector[-1]))
-            
         return symbolic_data
-
 
     def calculateEntropy(self,set):
         data = [vector[len(vector)-1] for vector in set]
@@ -130,8 +127,6 @@ class decisionTree:
         else:
             #there is no feature that can split the data at this point
             return max(set(labels), key=labels.count)
-
-
 
     def classifyRec(self, currentTree,vector):
         if isinstance(currentTree,int):
