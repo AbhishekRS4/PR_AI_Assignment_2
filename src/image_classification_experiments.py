@@ -9,17 +9,16 @@ from learning_utils import get_knn_classifier, get_adaboost_classifier, get_gaus
 
 def test_knn_classifier(dir_bovw_data="bovw_features_data/", file_csv_gs_cv="image_classification_gs_cv_knn.csv"):
     file_csv_gs_cv = os.path.join(dir_bovw_data, file_csv_gs_cv)
-    df_gs_cv = pd.read_csv(df_gs_cv)
+    df_gs_cv = pd.read_csv(file_csv_gs_cv)
 
     train_y = np.load(os.path.join(dir_bovw_data, "train_labels.npy"))
     test_y = np.load(os.path.join(dir_bovw_data, "test_labels.npy"))
 
-    list_train_acc = []
-    list_test_acc = []
-    list_f1 = []
-    list_roc_auc = []
+    file_log_results=f"image_classification_test_knn.csv"
+    test_col_names = ["clustering_algo", "num_visual_words", "preprocess", "classifier", "n_neighbors", "metric", "weights", "test_acc", "test_f1", "test_roc_auc"]
+    test_results_rows = []
 
-    for idx_clf in range(df_gs_cv.shape(0)):
+    for idx_clf in range(len(df_gs_cv)):
         num_visual_words = df_gs_cv.num_visual_words[idx_clf]
         preprocess = df_gs_cv.preprocess[idx_clf]
         metric = df_gs_cv.metric[idx_clf]
@@ -40,16 +39,17 @@ def test_knn_classifier(dir_bovw_data="bovw_features_data/", file_csv_gs_cv="ima
         classifier = get_knn_classifier(n_neighbors=n_neighbors, metric=metric, weights=weights)
         pipeline = [("std_scaler", preprocessor), ("knn", classifier)]
         learning_pipeline = get_learning_pipeline(pipeline)
-        print("learning pipeline")
-        print(learning_pipeline)
+        print(f"num visual words : {num_visual_words}")
+        print(f"learning pipeline : {pipeline}")
 
         learning_pipeline.fit(train_x, train_y)
-        train_acc = learning_pipeline.score(train_x, train_y)
         test_pred = learning_pipeline.predict(test_x)
         test_pred_prob = learning_pipeline.predict_proba(test_x)
-        test_acc, test_f1, test_cm, test_roc_auc = compute_classification_metrics_test_data(test_y, test_pred, test_pred_prob)
-        print(f"train acc: {train_acc:.4f}")
-        print_classification_metrics(test_acc, test_f1, test_cm, test_roc_auc)
+        test_acc, test_f1, test_roc_auc, test_cm = compute_classification_metrics_test_data(test_y, test_pred, test_pred_prob)
+        print_classification_metrics(test_acc, test_f1, test_roc_auc, test_cm)
+        test_results_rows.append(["kmeans", num_visual_words, preprocess, "knn", n_neighbors, metric, weights, round(test_acc, 4), round(test_f1, 4), round(test_roc_auc, 4)])
+    df_test_results = pd.DataFrame(test_results_rows, columns=test_col_names)
+    df_test_results.to_csv(os.path.join(dir_bovw_data, file_log_results), index=False)
     return
 
 def test_adaboost_classifier(dir_bovw_data="bovw_features_data/", file_csv_gs_cv="image_classification_gs_cv_adaboost.csv"):
@@ -59,16 +59,14 @@ def test_adaboost_classifier(dir_bovw_data="bovw_features_data/", file_csv_gs_cv
     train_y = np.load(os.path.join(dir_bovw_data, "train_labels.npy"))
     test_y = np.load(os.path.join(dir_bovw_data, "test_labels.npy"))
 
-    list_train_acc = []
-    list_test_acc = []
-    list_f1 = []
+    file_log_results=f"image_classification_test_adaboost.csv"
+    test_col_names = ["clustering_algo", "num_visual_words", "preprocess", "classifier", "", "", "", "", "", "", "test_acc", "test_f1", "test_roc_auc"]
+    test_results_rows = []
 
-    for idx_clf in range(df_gs_cv.shape(0)):
+    for idx_clf in range(len(df_gs_cv)):
         num_visual_words = df_gs_cv.num_visual_words[idx_clf]
         preprocess = df_gs_cv.preprocess[idx_clf]
-        metric = df_gs_cv.preprocess[idx_clf]
-        n_neighbors = df_gs_cv.n_neighbors[idx_clf]
-        weights = df_gs_cv.n_neighbors[idx_clf]
+
 
         train_x = np.load(os.path.join(dir_bovw_data, f"train_kmeans_{num_visual_words}.npy"))
         test_x = np.load(os.path.join(dir_bovw_data, f"test_kmeans_{num_visual_words}.npy"))
@@ -81,21 +79,21 @@ def test_adaboost_classifier(dir_bovw_data="bovw_features_data/", file_csv_gs_cv
             print(f"wrong option for preprocess: {preprocess} found, so exiting....")
             return
 
-        classifier = get_knn_classifier(n_neighbors=n_neighbors, metric=metric, weights=weights)
-        pipeline = [("std_scaler", preprocessor), ("knn", classifier)]
+        classifier = get_adaboost_classifier()
+        pipeline = [("std_scaler", preprocessor), ("adaboost", classifier)]
         learning_pipeline = get_learning_pipeline(pipeline)
         print("learning pipeline")
         print(learning_pipeline)
 
         learning_pipeline.fit(train_x, train_y)
-        train_acc = learning_pipeline.score(train_x, train_y)
         test_pred = learning_pipeline.predict(test_x)
         test_pred_prob = learning_pipeline.predict_proba(test_x)
-        test_acc, test_f1, test_cm, test_auc = compute_classification_metrics_test_data(test_y, test_pred, test_pred_prob)
-        print(f"train acc: {train_acc:.4f}")
-        print_classification_metrics(test_acc, test_f1, test_cm)
+        test_acc, test_f1, test_roc_auc, test_cm = compute_classification_metrics_test_data(test_y, test_pred, test_pred_prob)
+        print_classification_metrics(test_acc, test_f1, test_roc_auc, test_cm)
+        test_results_rows.append(["kmeans", num_visual_words, preprocess, "adaboost", n_neighbors, metric, weights, round(test_acc, 4), round(test_f1, 4), round(test_roc_auc, 4)])
+    df_test_results = pd.DataFrame(test_results_rows, columns=test_col_names)
+    df_test_results.to_csv(os.path.join(dir_bovw_data, file_log_results), index=False)
     return
-
 
 def do_gs_cv_image_classification(dir_bovw_data="bovw_features_data/", which_classifier="knn", start_num_visual_words=None, end_num_visual_words=None):
     if start_num_visual_words is None:
@@ -179,7 +177,7 @@ def do_cv_nb_image_classification(dir_bovw_data, start_num_visual_words=None, en
     scoring_fn = get_accuracy_scoring_fn()
     train_y = np.load(os.path.join(dir_bovw_data, "train_labels.npy"))
 
-    file_log_results="image_classification_cv_gaussian_nb.csv"
+    file_log_results = "image_classification_cv_gaussian_nb.csv"
     cv_col_names = ["clustering_algo", "num_visual_words", "preprocess", "classifier", "best_cv_score"]
     cv_results_rows = []
 
@@ -207,9 +205,9 @@ def test_nb_image_classification(dir_bovw_data, start_num_visual_words=None, end
     train_y = np.load(os.path.join(dir_bovw_data, "train_labels.npy"))
     test_y = np.load(os.path.join(dir_bovw_data, "test_labels.npy"))
 
-    file_log_results="image_classification_test_gaussian_nb.csv"
-    cv_col_names = ["clustering_algo", "num_visual_words", "preprocess", "classifier", "test_acc", "test_f1", "test_roc_auc"]
-    cv_results_rows = []
+    file_log_results = "image_classification_test_gaussian_nb.csv"
+    test_col_names = ["clustering_algo", "num_visual_words", "preprocess", "classifier", "test_acc", "test_f1", "test_roc_auc"]
+    test_results_rows = []
 
     for num_visual_words in range(start_num_visual_words, end_num_visual_words, 5):
         print(f"num visual words : {num_visual_words}")
@@ -226,8 +224,8 @@ def test_nb_image_classification(dir_bovw_data, start_num_visual_words=None, end
 
         row_ = ["kmeans", num_visual_words, preprocess_method, "gaussian_nb", round(test_acc, 4), round(test_f1, 4), round(test_roc_auc, 4)]
         print_classification_metrics(test_acc, test_f1, test_roc_auc, test_cm)
-        cv_results_rows.append(row_)
+        test_results_rows.append(row_)
 
-    df_cv_results = pd.DataFrame(cv_results_rows, columns=cv_col_names)
-    df_cv_results.to_csv(os.path.join(dir_bovw_data, file_log_results), index=False)
+    df_test_results = pd.DataFrame(test_results_rows, columns=test_col_names)
+    df_test_results.to_csv(os.path.join(dir_bovw_data, file_log_results), index=False)
     return
