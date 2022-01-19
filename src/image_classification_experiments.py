@@ -19,7 +19,7 @@ def test_knn_classifier(dir_bovw_data="bovw_features_data/", file_csv_gs_cv="ima
     file_log_results=f"image_classification_test_knn.csv"
     test_col_names = ["clustering_algo", "num_visual_words", "preprocess", "classifier", "n_neighbors", "metric", "weights", "test_acc", "test_f1", "test_roc_auc"]
     test_results_rows = []
-    csv_writer = CSVWriter(os.path.join(dir_bovw_data, file_log_results), cv_col_names)
+    csv_writer = CSVWriter(os.path.join(dir_bovw_data, file_log_results), test_col_names)
 
     for idx_clf in range(len(df_gs_cv)):
         num_visual_words = df_gs_cv.num_visual_words[idx_clf]
@@ -101,7 +101,7 @@ def test_adaboost_classifier(dir_bovw_data="bovw_features_data/", file_csv_gs_cv
 
 def do_gs_cv_image_classification(dir_bovw_data="bovw_features_data/", which_classifier="knn", start_num_visual_words=None, end_num_visual_words=None):
     if start_num_visual_words is None:
-        start_num_visual_words = 50
+        start_num_visual_words = 5
     if end_num_visual_words is None:
         end_num_visual_words = 205
 
@@ -173,7 +173,7 @@ def do_gs_cv_image_classification(dir_bovw_data="bovw_features_data/", which_cla
 
 def do_cv_nb_image_classification(dir_bovw_data, start_num_visual_words=None, end_num_visual_words=None):
     if start_num_visual_words is None:
-        start_num_visual_words = 50
+        start_num_visual_words = 5
     if end_num_visual_words is None:
         end_num_visual_words = 205
 
@@ -200,7 +200,7 @@ def do_cv_nb_image_classification(dir_bovw_data, start_num_visual_words=None, en
 
 def test_nb_image_classification(dir_bovw_data, start_num_visual_words=None, end_num_visual_words=None):
     if start_num_visual_words is None:
-        start_num_visual_words = 50
+        start_num_visual_words = 5
     if end_num_visual_words is None:
         end_num_visual_words = 205
 
@@ -211,7 +211,7 @@ def test_nb_image_classification(dir_bovw_data, start_num_visual_words=None, end
     file_log_results = "image_classification_test_gaussian_nb.csv"
     test_col_names = ["clustering_algo", "num_visual_words", "preprocess", "classifier", "test_acc", "test_f1", "test_roc_auc"]
     test_results_rows = []
-    csv_writer = CSVWriter(os.path.join(dir_bovw_data, file_log_results), cv_col_names)
+    csv_writer = CSVWriter(os.path.join(dir_bovw_data, file_log_results), test_col_names)
 
     for num_visual_words in range(start_num_visual_words, end_num_visual_words, 5):
         print(f"num visual words : {num_visual_words}")
