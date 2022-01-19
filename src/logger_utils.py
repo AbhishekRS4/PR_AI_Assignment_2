@@ -17,17 +17,17 @@ class CSVWriter:
         """
         self.file_name = file_name
         self.column_names = column_names
+        self.file_handle = None
+        self.writer = None
 
         if not os.path.isfile(self.file_name):
-            self.file_handle = open(self.file_name, "w")
-        else:
-            self.file_handle = open(self.file_name, "a+")
-
-        self.writer = csv.writer(self.file_handle)
-        if not os.path.isfile(self.file_name):
+            self.file_handle = open(self.file_name, "w", encoding="utf-8", newline="\n")
+            self.writer = csv.writer(self.file_handle)
             self.write_header()
             print(f"{self.file_name} created successfully with header row")
         else:
+            self.file_handle = open(self.file_name, "a+", encoding="utf-8", newline="\n")
+            self.writer = csv.writer(self.file_handle)
             print(f"{self.file_name} already exists, so will append results")
 
     def write_header(self):
