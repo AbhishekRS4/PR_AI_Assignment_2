@@ -52,6 +52,7 @@ def test_knn_classifier(dir_bovw_data="bovw_features_data/", file_csv_gs_cv="ima
         print_classification_metrics(test_acc, test_f1, test_roc_auc, test_cm)
         row_ = ["kmeans", num_visual_words, preprocess, "knn", n_neighbors, metric, weights, round(test_acc, 4), round(test_f1, 4), round(test_roc_auc, 4)]
         csv_writer.write_row(row_)
+    csv_writer.close()
     return
 
 def test_adaboost_classifier(dir_bovw_data="bovw_features_data/", file_csv_gs_cv="image_classification_gs_cv_adaboost.csv"):
@@ -95,6 +96,7 @@ def test_adaboost_classifier(dir_bovw_data="bovw_features_data/", file_csv_gs_cv
         print_classification_metrics(test_acc, test_f1, test_roc_auc, test_cm)
         row_ = ["kmeans", num_visual_words, preprocess, "adaboost", n_neighbors, metric, weights, round(test_acc, 4), round(test_f1, 4), round(test_roc_auc, 4)]
         csv_writer.write_row(row_)
+    csv_writer.close()
     return
 
 def do_gs_cv_image_classification(dir_bovw_data="bovw_features_data/", which_classifier="knn", start_num_visual_words=None, end_num_visual_words=None):
@@ -166,6 +168,7 @@ def do_gs_cv_image_classification(dir_bovw_data="bovw_features_data/", which_cla
                 + param_values \
                 + [round(learning_pipeline["grid_search"].best_score_, 4)]
             csv_writer.write_row(row_)
+    csv_writer.close()
     return
 
 def do_cv_nb_image_classification(dir_bovw_data, start_num_visual_words=None, end_num_visual_words=None):
@@ -192,6 +195,7 @@ def do_cv_nb_image_classification(dir_bovw_data, start_num_visual_words=None, en
         row_ = ["kmeans", num_visual_words, preprocess_method, "gaussian_nb"] \
             + [round(np.mean(clf_cv["test_score"]), 4)]
         csv_writer.write_row(row_)
+    csv_writer.close()
     return
 
 def test_nb_image_classification(dir_bovw_data, start_num_visual_words=None, end_num_visual_words=None):
@@ -225,4 +229,5 @@ def test_nb_image_classification(dir_bovw_data, start_num_visual_words=None, end
         row_ = ["kmeans", num_visual_words, preprocess_method, "gaussian_nb", round(test_acc, 4), round(test_f1, 4), round(test_roc_auc, 4)]
         print_classification_metrics(test_acc, test_f1, test_roc_auc, test_cm)
         csv_writer.write_row(row_)
+    csv_writer.close()
     return
