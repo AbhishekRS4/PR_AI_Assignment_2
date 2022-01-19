@@ -1,4 +1,13 @@
 clustering_algo,num_visual_words,preprocess,classifier,best_cv_score
+kmeans,5,std_scaler,gaussian_nb,0.4034
+kmeans,10,std_scaler,gaussian_nb,0.3892
+kmeans,15,std_scaler,gaussian_nb,0.418
+kmeans,20,std_scaler,gaussian_nb,0.418
+kmeans,25,std_scaler,gaussian_nb,0.4399
+kmeans,30,std_scaler,gaussian_nb,0.4185
+kmeans,35,std_scaler,gaussian_nb,0.4257
+kmeans,40,std_scaler,gaussian_nb,0.4185
+kmeans,45,std_scaler,gaussian_nb,0.4257
 kmeans,50,std_scaler,gaussian_nb,0.4405
 kmeans,55,std_scaler,gaussian_nb,0.4548
 kmeans,60,std_scaler,gaussian_nb,0.4328
