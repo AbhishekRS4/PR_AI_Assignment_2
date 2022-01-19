@@ -4,10 +4,12 @@ import numpy as np
 from sklearn.cluster import MiniBatchKMeans, AgglomerativeClustering
 
 class SIFTBagofVisualWordsFeatureExtractor:
+    """
+    SIFTFeatureExtractor class to create Bag of Visual Words features
+    """
     def __init__(self, train_images, clustering_method="kmeans", num_visual_words=100):
         """
-        SIFTFeatureExtractor class to create Bag of Visual Words features
-
+        ----------
         Attributes
         ----------
         train_images : ndarray
@@ -74,3 +76,77 @@ class SIFTBagofVisualWordsFeatureExtractor:
                 visual_word_index = self.clustering_algo.predict([test_desc[desc_index].astype(np.float64)])
                 test_histograms[image_index, visual_word_index] += 1
         return test_histograms
+
+class FastFourierTransformFeatureExtractor:
+    """
+    FastFourierTransformFeatureExtractor class to create image features using FFT
+    """
+    def __init__(self, radius=20, target_dim=(50, 50), magnitude_spectrum_weight=20):
+        """
+        ----------
+        Attributes
+        ----------
+        radius : int
+            radius to control the amount of high frequency to be allowed [in other words to block low frequency]
+        target_dim : tuple of ints
+            dimension of output image features
+        magnitude_spectrum_weight : int
+            weight for magnitude spectrum function
+        """
+        self.radius = radius
+        self.target_dim = target_dim
+        self.magnitude_spectrum_weight = magnitude_spectrum_weight
+        self.img_magnitude_spectrum = None
+        self.feats_magnitude_spectrum = None
+
+    def get_mask_high_pass_filter(self, img_shape):
+        """
+        ----------
+        Attributes
+        ----------
+        img : tuple of ints
+            image shape (H, W)
+        """
+        H, W = img_shape
+        mask = np.ones((H, W), np.uint8)
+
+        center_H, center_W = int(H / 2), int(W / 2)
+        center = [center_H, center_W]
+
+        x, y = np.ogrid[:H, :W]
+        # center area in fourier space is the low frequency
+        mask_area = (x - center[0]) ** 2 + (y - center[1]) ** 2 <= self.radius ** 2
+        # block low frequency i.e. center area in the fourier space
+        mask[mask_area] = 0
+        # inverse of this mask gives the mask for low pass filter
+        return mask
+
+    def get_features_using_fft(self, img):
+        """
+        ----------
+        Attributes
+        ----------
+        img : ndarray
+            grayscale image
+        """
+        # convert image from image domain to frequency domain
+        freq_domain = np.fft.fft2(img)
+
+        # Apply shift to image in freq domain so that origin is shifted from top left to center of the image
+        freq_domain_shifted = np.fft.fftshift(freq_domain)
+        self.img_magnitude_spectrum = self.magnitude_spectrum_weight * np.log(np.abs(freq_domain_shifted))
+
+        # Apply mask
+        mask = self.get_mask_high_pass_filter(img.shape)
+        freq_domain_shifted_masked = freq_domain_shifted * mask
+
+        # Compute magnitude spectrum of the filtered frequency domain image
+        self.feats_magnitude_spectrum = self.magnitude_spectrum_weight * np.log(np.abs(freq_domain_shifted_masked) + 1)
+
+        # Apply inverse shift so that origin is shifted from center to top left
+        freq_domain_inv_shifted_masked = np.fft.ifftshift(freq_domain_shifted_masked)
+
+        # Apply inverse FFT to convert from frequency domain to image domain
+        img_feats = np.fft.ifft2(freq_domain_inv_shifted_masked, self.target_dim)
+        img_feats = np.abs(img_feats)
+        return img_feats
