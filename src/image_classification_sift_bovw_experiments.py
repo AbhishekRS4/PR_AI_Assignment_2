@@ -198,7 +198,7 @@ def do_cv_nb_image_classification(dir_bovw_data, start_num_visual_words=None, en
     csv_writer.close()
     return
 
-def test_nb_image_classification(dir_bovw_data, start_num_visual_words=None, end_num_visual_words=None):
+def test_nb_image_classifier(dir_bovw_data, start_num_visual_words=None, end_num_visual_words=None):
     if start_num_visual_words is None:
         start_num_visual_words = 5
     if end_num_visual_words is None:
