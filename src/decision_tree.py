@@ -38,7 +38,7 @@ class decisionTree:
         self.tree = None
         self.values_per_bin = [len(data) / bins[i] for i in range(self.n_features)]
         self.originalData = data
-        self.data = self.dataToSymbolic(self.originalData,bins)
+        self.data = self.dataToSymbolic(self.originalData)
 
         self.allFeatures = [ [] for x in range(self.n_features)]
         for vector in self.data:
@@ -56,7 +56,7 @@ class decisionTree:
                 rank +=1
         return (int)(rank / self.values_per_bin[feature])
 
-    def  dataToSymbolic(self,data, bins):
+    def  dataToSymbolic(self,data):
         symbolic_data = [[] for i in range(len(data))]
         for idx_feature in range(self.n_features):
             for i,vector in enumerate(data):
