@@ -43,13 +43,13 @@ def get_knn_classifier(n_neighbors=None, metric=None, weights=None):
         clf_knn = KNeighborsClassifier(n_neighbors=n_neighbors, metric=metric, weights=weights)
     return clf_knn
 
-def get_adaboost_classifier(n_estimators=None, criterion=None, splitter=None, max_depth=None, min_samples_split=None, random_state=4):
+def get_adaboost_classifier(n_estimators=None, learning_rate=None, criterion=None, splitter=None, max_depth=None, min_samples_split=None, random_state=4):
     if n_estimators is None:
         clf_dt = DecisionTreeClassifier(random_state=random_state)
         clf_adaboost = AdaBoostClassifier(clf_dt, random_state=random_state)
     else:
         clf_dt = DecisionTreeClassifier(criterion=criterion, splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split, random_state=random_state)
-        clf_adaboost = AdaBoostClassifier(clf_dt, n_estimators=n_estimators, random_state=random_state)
+        clf_adaboost = AdaBoostClassifier(clf_dt, n_estimators=n_estimators, learning_rate=learning_rate, random_state=random_state)
     return clf_adaboost
 
 def get_grid_search_classifier(estimator, param_grid, cv=5):
