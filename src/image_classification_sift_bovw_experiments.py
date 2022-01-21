@@ -7,7 +7,7 @@ from logger_utils import CSVWriter
 from sklearn.model_selection import cross_validate
 from learning_utils import get_standard_scaler, get_tfidf_transformer, get_accuracy_scoring_fn
 from learning_utils import get_learning_pipeline, compute_classification_metrics_test_data, print_classification_metrics
-from learning_utils import get_knn_classifier, get_adaboost_classifier, get_gaussian_nb_classifier, get_grid_search_classifier
+from learning_utils import get_knn_classifier, get_adaboost_classifier, get_gaussian_nb_classifier, get_grid_search_classifier, get_svc_classifier
 
 def test_knn_classifier_sift(dir_sift_data="sift_features/", file_csv_gs_cv="image_classification_gs_cv_knn.csv"):
     file_csv_gs_cv = os.path.join(dir_sift_data, file_csv_gs_cv)
@@ -114,6 +114,53 @@ def test_adaboost_classifier_sift(dir_sift_data="sift_features/", file_csv_gs_cv
     csv_writer.close()
     return
 
+def test_svc_classifier_sift(dir_sift_data="sift_features/", file_csv_gs_cv="image_classification_gs_cv_svc.csv"):
+    file_csv_gs_cv = os.path.join(dir_sift_data, file_csv_gs_cv)
+    df_gs_cv = pd.read_csv(file_csv_gs_cv)
+
+    train_y = np.load(os.path.join(dir_sift_data, "train_labels.npy"))
+    test_y = np.load(os.path.join(dir_sift_data, "test_labels.npy"))
+
+    file_log_results = "image_classification_test_svc.csv"
+    test_col_names = ["features", "num_visual_words", "preprocess", "classifier", "C", "kernel", "degree", "gamma", "test_acc", "test_f1", "test_roc_auc"]
+    test_results_rows = []
+    csv_writer = CSVWriter(os.path.join(dir_sift_data, file_log_results), test_col_names)
+
+    for idx_clf in range(len(df_gs_cv)):
+        num_visual_words = df_gs_cv.num_visual_words[idx_clf]
+        preprocess = df_gs_cv.preprocess[idx_clf]
+        C = df_gs_cv.C[idx_clf]
+        kernel = df_gs_cv.kernel[idx_clf]
+        degree = df_gs_cv.degree[idx_clf]
+        gamma = df_gs_cv.gamma[idx_clf]
+
+        train_x = np.load(os.path.join(dir_sift_data, f"train_sift_{num_visual_words}.npy"))
+        test_x = np.load(os.path.join(dir_sift_data, f"test_sift_{num_visual_words}.npy"))
+
+        if preprocess == "std_scaler":
+            preprocessor = get_standard_scaler()
+        elif preprocess == "tf_idf":
+            preprocessor = get_tfidf_transformer()
+        else:
+            print(f"wrong option for preprocess: {preprocess} found, so exiting....")
+            return
+
+        classifier = get_svc_classifier(C=C, kernel=kernel, degree=degree, gamma=gamma, probability=True)
+        pipeline = [(preprocess, preprocessor), ("svc", classifier)]
+        learning_pipeline = get_learning_pipeline(pipeline)
+        print(f"num visual words : {num_visual_words}")
+        print(f"learning pipeline : {pipeline}")
+
+        learning_pipeline.fit(train_x, train_y)
+        test_pred = learning_pipeline.predict(test_x)
+        test_pred_prob = learning_pipeline.predict_proba(test_x)
+        test_acc, test_f1, test_roc_auc, test_cm = compute_classification_metrics_test_data(test_y, test_pred, test_pred_prob)
+        print_classification_metrics(test_acc, test_f1, test_roc_auc, test_cm)
+        row_ = ["sift", num_visual_words, preprocess, "svc", C, kernel, degree, gamma, round(test_acc, 4), round(test_f1, 4), round(test_roc_auc, 4)]
+        csv_writer.write_row(row_)
+    csv_writer.close()
+    return
+
 def do_gs_cv_image_classification_sift(dir_sift_data="sift_features/", which_classifier="knn", start_num_visual_words=None, end_num_visual_words=None):
     if start_num_visual_words is None:
         start_num_visual_words = 5
@@ -137,6 +184,13 @@ def do_gs_cv_image_classification_sift(dir_sift_data="sift_features/", which_cla
             "n_estimators" : np.arange(10, 160, 10),
             "learning_rate" : [0.01, 0.1, 1],
         }
+    elif which_classifier == "svc":
+        param_grid = {
+            "C" : list(np.around(np.arange(0.1, 1, 0.1), decimals=1)) + list(np.arange(1, 11, 1)),
+            "kernel" : ["linear", "poly", "rbf", "sigmoid"],
+            "degree" : np.arange(2, 6),
+            "gamma" : ["scale", "auto"],
+        }
     else:
         print(f"wrong option : {which_classifier}")
         return
@@ -155,6 +209,8 @@ def do_gs_cv_image_classification_sift(dir_sift_data="sift_features/", which_cla
             classifier = get_knn_classifier()
         elif which_classifier == "adaboost":
             classifier = get_adaboost_classifier()
+        elif which_classifier == "svc":
+            classifier = get_svc_classifier()
 
         list_pipelines = [
             [("std_scaler", get_standard_scaler()), ("grid_search", get_grid_search_classifier(classifier, param_grid))],
@@ -186,6 +242,7 @@ def do_gs_cv_image_classification_sift(dir_sift_data="sift_features/", which_cla
     csv_writer.close()
     return
 
+"""
 def do_cv_nb_image_classification_sift(dir_sift_data, start_num_visual_words=None, end_num_visual_words=None):
     if start_num_visual_words is None:
         start_num_visual_words = 5
@@ -246,3 +303,4 @@ def test_nb_image_classifier_sift(dir_sift_data, start_num_visual_words=None, en
         csv_writer.write_row(row_)
     csv_writer.close()
     return
+"""
