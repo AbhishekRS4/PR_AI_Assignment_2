@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
@@ -35,6 +36,13 @@ def get_logistic_regression_classifier(max_iter=100):
 def get_gaussian_nb_classifier():
     clf_gaussian_nb = GaussianNB()
     return clf_gaussian_nb
+
+def get_svc_classifier(C=None, kernel=None, degree=None, gamma=None, probability=False, random_state=4):
+    if C is None:
+        clf_svc = SVC(probability=probability, random_state=random_state)
+    else:
+        clf_svc = SVC(C=C, kernel=kernel, degree=degree, gamma=gamma, probability=probability, random_state=random_state)
+    return clf_svc
 
 def get_knn_classifier(n_neighbors=None, metric=None, weights=None):
     if n_neighbors is None:
