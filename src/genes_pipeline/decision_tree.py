@@ -83,18 +83,21 @@ class decisionTree:
         #stopping criteria
         if purity == 1 or \
                 (self.stoppingCriteria == "size" and self.stoppingValue >= len(currentData)) or\
-                (self.stoppingCriteria == "purity" and self.stoppingValue >= len(currentData)):
+                (self.stoppingCriteria == "purity" and self.stoppingValue < purity):
             return max(set(labels), key=labels.count)
 
         minEntropy = float("inf")
         featureMinEntropy = -1
         valueMinEntropy = -1
+
+
         for index, feature in enumerate(features): 
             if len(feature) ==1:
                 continue
 
             for value in feature:
                 if len(feature) ==2 and value == feature[1]:
+                    #already investigated this option of splitting
                     continue
                 dataBranch1 = []
                 dataBranch2 = []
@@ -104,7 +107,7 @@ class decisionTree:
                     else:
                         dataBranch2.append(instance)
 
-                if len(dataBranch1) or len(dataBranch2) == 0:
+                if len(dataBranch1) == 0 or len(dataBranch2) == 0:
                     continue
                 entropy = len(dataBranch1) * self.calculateEntropy(dataBranch1) + len(dataBranch1) * self.calculateEntropy(dataBranch2) 
                 if entropy < minEntropy:
@@ -129,6 +132,7 @@ class decisionTree:
             return max(set(labels), key=labels.count)
 
     def classifyRec(self, currentTree,vector):
+
         if isinstance(currentTree,int):
             return list(self.classIntMaping.keys())[ list(self.classIntMaping.values()).index(currentTree)]
         if vector[currentTree[0]] == currentTree[1]:

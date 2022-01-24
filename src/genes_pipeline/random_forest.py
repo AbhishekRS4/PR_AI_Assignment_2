@@ -23,11 +23,6 @@ class randomForest:
         return max(set(answers), key = answers.count)
 
 
-data = [[0.9,79,"green"],[0.1,12,"green"],[0.9,10,"red"],[0.2,112.4,"red"]]
-forest = randomForest(data,10)
-
-print(forest.classify([0.3,112.4]))
-
 
 
 
