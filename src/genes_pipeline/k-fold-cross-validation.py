@@ -62,33 +62,50 @@ testing = []
 size_training = len(data) / K
 
 
-performance = [0 for x in N_PC]
-for i, n_components in enumerate(N_PC):
 
-    print("PCA with {0} pcs...".format(n_components))
-    pca = PCA(n_components=n_components)
-    reduced_data_np = pca.fit(data).transform(data)
-    print("...finished pca")
+if False:
+    performance = [0 for x in N_PC]
+    for i, n_components in enumerate(N_PC):
 
-    reduced_data = reduced_data_np.tolist()
-    for j,value in enumerate(reduced_data):
-        value.append(labels[j])
-    random.shuffle(reduced_data) #shuffle data
-    for fold_position in range(K):
-        testing  = reduced_data[ int(fold_position * size_training) : int((fold_position +1 ) * size_training)]
+        print("PCA with {0} pcs...".format(n_components))
+        pca = PCA(n_components=n_components)
+        reduced_data_np = pca.fit(data).transform(data)
+        print("...finished pca")
 
-        training = reduced_data[: int(fold_position * size_training)] +  reduced_data[int((fold_position+1) * size_training):]
+        reduced_data = reduced_data_np.tolist()
+        for j,value in enumerate(reduced_data):
+            value.append(labels[j])
+        random.shuffle(reduced_data) #shuffle data
+        for fold_position in range(K):
+            testing  = reduced_data[ int(fold_position * size_training) : int((fold_position +1 ) * size_training)]
+
+            training = reduced_data[: int(fold_position * size_training)] +  reduced_data[int((fold_position+1) * size_training):]
+            
+            forrest = randomForest(reduced_data,n_trees= 40, bins= 4, stoppingCriteria= "size", stoppingValue= 1)
+
+
+            for value in testing:
+                if forrest.classify(value[:-1]) == value[-1]:
+                    performance[i] += 1
         
-        forrest = randomForest(reduced_data,n_trees= 40, bins= 4, stoppingCriteria= "size", stoppingValue= 1)
+        performance[i] /= len(reduced_data)
 
+    print(performance)
 
-        for value in testing:
-            if forrest.classify(value[:-1]) == value[-1]:
-                performance[i] += 1
-    
-    performance[i] /= len(reduced_data)
+#test without dimensional reduction
+testing  = data[642:]
+performance = 0 
+training = data[0:642]
+
+tr = decisionTree(training, bins= 4, stoppingCriteria= "size", stoppingValue= 1)
+tr.train()
+
+for value in testing:
+    if tr.classify(value[:-1]) == value[-1]:
+        performance += 1
 
 print(performance)
+
 
 #[n_components +1 - x for x in range(n_components)]
 
