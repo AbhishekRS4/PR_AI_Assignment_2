@@ -196,7 +196,7 @@ def do_gs_cv_image_classification_fft(dir_fft_data="fft_features/", which_classi
     elif which_classifier == "svc":
         param_grid = {
             "C" : [1],
-            "kernel" : ["sigmoid", "poly", "rbf", "sigmoid"],
+            "kernel" : ["linear", "poly", "rbf", "sigmoid"],
             "degree" : np.arange(2, 6),
             "gamma" : ["scale"]
         }
