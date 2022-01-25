@@ -1,0 +1,17 @@
+features,num_dims,preprocess,classifier,C,degree,gamma,kernel,best_cv_score
+fft,50,none,svc,1,2,scale,rbf,0.3823
+fft,50,std_scaler,svc,1,2,scale,sigmoid,0.3746
+fft,60,none,svc,1,2,scale,rbf,0.3746
+fft,60,std_scaler,svc,1,2,scale,sigmoid,0.3601
+fft,70,none,svc,1,2,scale,rbf,0.3532
+fft,70,std_scaler,svc,1,2,scale,sigmoid,0.3675
+fft,80,none,svc,1,2,scale,rbf,0.3606
+fft,80,std_scaler,svc,1,2,scale,rbf,0.3675
+fft,90,none,svc,1,2,scale,rbf,0.3532
+fft,90,std_scaler,svc,1,2,scale,rbf,0.3603
+fft,100,none,svc,1,2,scale,rbf,0.3825
+fft,100,std_scaler,svc,1,2,scale,rbf,0.3529
+fft,110,none,svc,1,2,scale,rbf,0.3606
+fft,110,std_scaler,svc,1,2,scale,rbf,0.3458
+fft,120,none,svc,1,2,scale,rbf,0.3754
+fft,120,std_scaler,svc,1,2,scale,rbf,0.3458

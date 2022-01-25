@@ -1,0 +1,17 @@
+features,num_dims,preprocess,classifier,base_estimator__criterion,base_estimator__max_depth,base_estimator__min_samples_split,base_estimator__splitter,learning_rate,n_estimators,best_cv_score
+fft,50,none,adaboost,entropy,10,2,random,1,50,0.3159
+fft,50,std_scaler,adaboost,entropy,10,2,random,1,50,0.3159
+fft,60,none,adaboost,gini,10,2,random,0.1,50,0.3675
+fft,60,std_scaler,adaboost,gini,10,2,random,0.1,50,0.3675
+fft,70,none,adaboost,gini,10,2,random,1,50,0.3751
+fft,70,std_scaler,adaboost,gini,10,2,random,1,50,0.3751
+fft,80,none,adaboost,gini,10,2,best,1,50,0.3524
+fft,80,std_scaler,adaboost,entropy,10,2,random,0.1,50,0.3598
+fft,90,none,adaboost,gini,10,2,random,0.1,50,0.3677
+fft,90,std_scaler,adaboost,gini,10,2,random,0.1,50,0.3677
+fft,100,none,adaboost,gini,10,2,best,0.1,50,0.3235
+fft,100,std_scaler,adaboost,gini,10,2,random,1,50,0.3307
+fft,110,none,adaboost,gini,10,2,random,1,50,0.3519
+fft,110,std_scaler,adaboost,gini,10,2,random,1,50,0.3444
+fft,120,none,adaboost,entropy,10,2,random,0.1,50,0.3452
+fft,120,std_scaler,adaboost,entropy,10,2,random,0.1,50,0.3452

@@ -1,0 +1,17 @@
+features,num_dims,preprocess,classifier,metric,n_neighbors,weights,best_cv_score
+fft,50,none,knn,chebyshev,10,distance,0.3241
+fft,50,std_scaler,knn,chebyshev,8,distance,0.3529
+fft,60,none,knn,euclidean,10,distance,0.3013
+fft,60,std_scaler,knn,manhattan,18,distance,0.2942
+fft,70,none,knn,chebyshev,24,distance,0.3164
+fft,70,std_scaler,knn,chebyshev,15,distance,0.3222
+fft,80,none,knn,chebyshev,17,distance,0.3312
+fft,80,std_scaler,knn,euclidean,7,distance,0.2942
+fft,90,none,knn,manhattan,16,distance,0.3013
+fft,90,std_scaler,knn,euclidean,7,distance,0.2939
+fft,100,none,knn,chebyshev,18,distance,0.3159
+fft,100,std_scaler,knn,manhattan,22,distance,0.2937
+fft,110,none,knn,euclidean,20,distance,0.3082
+fft,110,std_scaler,knn,chebyshev,20,distance,0.3304
+fft,120,none,knn,manhattan,20,distance,0.2939
+fft,120,std_scaler,knn,manhattan,13,distance,0.2939

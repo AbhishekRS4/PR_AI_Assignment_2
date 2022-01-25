@@ -1,0 +1,17 @@
+features,num_dims,preprocess,classifier,n_neighbors,metric,weights,test_acc,test_f1,test_roc_auc
+fft,50,none,knn,10,chebyshev,distance,0.2353,0.2325,0.6328
+fft,50,std_scaler,knn,8,chebyshev,distance,0.2941,0.3026,0.6043
+fft,60,none,knn,10,euclidean,distance,0.1765,0.1397,0.5469
+fft,60,std_scaler,knn,18,manhattan,distance,0.2353,0.202,0.5944
+fft,70,none,knn,24,chebyshev,distance,0.2353,0.2642,0.5799
+fft,70,std_scaler,knn,15,chebyshev,distance,0.2059,0.1923,0.5477
+fft,80,none,knn,17,chebyshev,distance,0.2941,0.3171,0.6015
+fft,80,std_scaler,knn,7,euclidean,distance,0.1471,0.115,0.4792
+fft,90,none,knn,16,manhattan,distance,0.2059,0.1634,0.5574
+fft,90,std_scaler,knn,7,euclidean,distance,0.1471,0.1429,0.4593
+fft,100,none,knn,18,chebyshev,distance,0.1765,0.1906,0.56
+fft,100,std_scaler,knn,22,manhattan,distance,0.2059,0.1597,0.5529
+fft,110,none,knn,20,euclidean,distance,0.1765,0.1437,0.5804
+fft,110,std_scaler,knn,20,chebyshev,distance,0.2059,0.2091,0.5731
+fft,120,none,knn,20,manhattan,distance,0.1765,0.1482,0.5654
+fft,120,std_scaler,knn,13,manhattan,distance,0.1765,0.1496,0.5453

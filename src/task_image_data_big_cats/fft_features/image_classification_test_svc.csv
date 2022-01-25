@@ -1,0 +1,17 @@
+features,num_dims,preprocess,classifier,C,kernel,degree,gamma,test_acc,test_f1,test_roc_auc
+fft,50,none,svc,1.0,rbf,2,scale,0.1765,0.1572,0.5718
+fft,50,std_scaler,svc,1.0,sigmoid,2,scale,0.2353,0.2148,0.555
+fft,60,none,svc,1.0,rbf,2,scale,0.2059,0.1938,0.5719
+fft,60,std_scaler,svc,1.0,sigmoid,2,scale,0.2353,0.1839,0.5826
+fft,70,none,svc,1.0,rbf,2,scale,0.2353,0.222,0.5678
+fft,70,std_scaler,svc,1.0,sigmoid,2,scale,0.2647,0.2196,0.5978
+fft,80,none,svc,1.0,rbf,2,scale,0.2353,0.2247,0.5661
+fft,80,std_scaler,svc,1.0,rbf,2,scale,0.2941,0.2695,0.5846
+fft,90,none,svc,1.0,rbf,2,scale,0.2353,0.2247,0.5608
+fft,90,std_scaler,svc,1.0,rbf,2,scale,0.2941,0.2695,0.5749
+fft,100,none,svc,1.0,rbf,2,scale,0.2353,0.2247,0.5676
+fft,100,std_scaler,svc,1.0,rbf,2,scale,0.3235,0.3035,0.5759
+fft,110,none,svc,1.0,rbf,2,scale,0.2353,0.2247,0.5653
+fft,110,std_scaler,svc,1.0,rbf,2,scale,0.2941,0.2695,0.5687
+fft,120,none,svc,1.0,rbf,2,scale,0.2353,0.2247,0.5667
+fft,120,std_scaler,svc,1.0,rbf,2,scale,0.2647,0.2323,0.5652
