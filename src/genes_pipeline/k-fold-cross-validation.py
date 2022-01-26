@@ -61,9 +61,10 @@ training = []
 testing = []
 size_training = len(data) / K
 
+distinct_lables = ['PRAD', 'LUAD', 'BRCA', 'KIRC', 'COAD']
+confusion_matrix = [[0,0,0,0,0] for x in range(5)]
 
-
-if False:
+if True:
     performance = [0 for x in N_PC]
     for i, n_components in enumerate(N_PC):
 
@@ -81,30 +82,34 @@ if False:
 
             training = reduced_data[: int(fold_position * size_training)] +  reduced_data[int((fold_position+1) * size_training):]
             
-            forrest = randomForest(reduced_data,n_trees= 40, bins= 4, stoppingCriteria= "size", stoppingValue= 1)
-
-
+            dt = randomForest(training,n_trees = 40, bins = 4, stoppingCriteria= "size", stoppingValue= 1)
             for value in testing:
-                if forrest.classify(value[:-1]) == value[-1]:
+                i1 = distinct_lables.index(value[-1])
+                i2 = distinct_lables.index(dt.classify(value[:-1]))
+                confusion_matrix[i1][i2] +=1
+
+                if dt.classify(value[:-1]) == value[-1]:
                     performance[i] += 1
         
         performance[i] /= len(reduced_data)
 
     print(performance)
+    print(confusion_matrix)
 
-#test without dimensional reduction
-testing  = data[642:]
-performance = 0 
-training = data[0:642]
+if False:
+    #test without dimensional reduction
+    testing  = data[642:]
+    performance = 0 
+    training = data[0:642]
 
-tr = decisionTree(training, bins= 4, stoppingCriteria= "size", stoppingValue= 1)
-tr.train()
+    tr = decisionTree(training, bins= 4, stoppingCriteria= "size", stoppingValue= 1)
+    tr.train()
 
-for value in testing:
-    if tr.classify(value[:-1]) == value[-1]:
-        performance += 1
+    for value in testing:
+        if tr.classify(value[:-1]) == value[-1]:
+            performance += 1
 
-print(performance)
+    print(performance)
 
 
 #[n_components +1 - x for x in range(n_components)]
