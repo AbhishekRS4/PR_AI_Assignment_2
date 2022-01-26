@@ -4,10 +4,10 @@ from sklearn.cluster import DBSCAN
 from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import AdaBoostClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.ensemble import AdaBoostClassifier, VotingClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, make_scorer, roc_auc_score, silhouette_score
@@ -74,10 +74,17 @@ def get_accuracy_scoring_fn():
     acc_scoring_fn = make_scorer(accuracy_score)
     return acc_scoring_fn
 
-def compute_classification_metrics_test_data(y_true, y_pred, y_pred_probs):
+def get_voting_classifier(list_ensemble_models, voting="hard"):
+    voting_classifier = VotingClassifier(list_ensemble_models, voting=voting)
+    return voting_classifier
+
+def compute_classification_metrics_test_data(y_true, y_pred, y_pred_probs=None):
     acc = accuracy_score(y_true, y_pred)
     f1 = f1_score(y_true, y_pred, average="weighted")
-    roc_auc = roc_auc_score(y_true, y_pred_probs, multi_class="ovr")
+    if y_pred_probs is not None:
+        roc_auc = roc_auc_score(y_true, y_pred_probs, multi_class="ovr")
+    else:
+        roc_auc = None
     cm = confusion_matrix(y_true, y_pred)
     return acc, f1, roc_auc, cm
 
@@ -87,7 +94,8 @@ def print_classification_metrics(acc, f1, roc_auc, cm):
     print("----------------------")
     print(f"accuracy : {acc:.4f}")
     print(f"f1 score : {f1:.4f}")
-    print(f"roc auc : {roc_auc:.4f}")
+    if roc_auc is not None:
+        print(f"roc auc : {roc_auc:.4f}")
     print("confustion matrix")
     print(cm)
     print()
