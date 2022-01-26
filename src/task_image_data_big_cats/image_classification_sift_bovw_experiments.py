@@ -98,6 +98,7 @@ def test_adaboost_classifier_sift(dir_sift_data="sift_features/", file_csv_gs_cv
         )
         pipeline = [(preprocess, preprocessor), ("adaboost", classifier)]
         learning_pipeline = get_learning_pipeline(pipeline)
+        print(f"num visual words : {num_visual_words}")
         print("learning pipeline")
         print(learning_pipeline)
 
@@ -245,8 +246,6 @@ def do_gs_cv_image_classification_sift(dir_sift_data="sift_features/", which_cla
 def do_ensemble_experiments(is_same_visual_words=True):
     if is_same_visual_words:
         do_ensemble_experiments_same_visual_words()
-    else:
-        do_ensemble_experiments_different_visual_words()
     return
 
 def do_ensemble_experiments_same_visual_words(dir_sift_data="sift_features/"):
@@ -257,8 +256,6 @@ def do_ensemble_experiments_same_visual_words(dir_sift_data="sift_features/"):
     df_knn = pd.read_csv(file_knn)
     df_svc = pd.read_csv(file_svc)
     df_adaboost = pd.read_csv(file_adaboost)
-
-    print(df_svc.columns)
 
     df_knn = df_knn[df_knn.preprocess == "tf_idf"]
     df_svc = df_svc[df_svc.preprocess == "tf_idf"]
@@ -282,7 +279,6 @@ def do_ensemble_experiments_same_visual_words(dir_sift_data="sift_features/"):
         n_neighbors = df_knn.iloc[idx_clf].n_neighbors
         weights = df_knn.iloc[idx_clf].weights
 
-        #print(df_svc.iloc[idx_clf])
         C = df_svc.iloc[idx_clf].C
         kernel = df_svc.iloc[idx_clf].kernel
         degree = df_svc.iloc[idx_clf].degree
@@ -325,9 +321,6 @@ def do_ensemble_experiments_same_visual_words(dir_sift_data="sift_features/"):
         ]
         csv_writer.write_row(row_)
     csv_writer.close()
-    return
-
-def do_ensemble_experiments_different_visual_words(dir_sift_data="sift_features/"):
     return
 
 """
