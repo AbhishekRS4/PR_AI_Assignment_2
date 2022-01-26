@@ -2,6 +2,7 @@ import pandas as pd
 import scipy.stats
 import copy
 import sys
+import random
 
 class decisionTree:
 
@@ -37,8 +38,11 @@ class decisionTree:
         self.classIntMaping = {}
         self.tree = None
         self.values_per_bin = [len(data) / bins[i] for i in range(self.n_features)]
+        self.bins = bins
         self.originalData = data
+        self.thresholds = [[]for x in range(self.n_features)]
         self.data = self.dataToSymbolic(self.originalData)
+
 
         self.allFeatures = [ [] for x in range(self.n_features)]
         for vector in self.data:
@@ -49,18 +53,30 @@ class decisionTree:
     def train(self):
         self.tree = self.splitBranchRec(self.data,self.allFeatures)
 
-    def valueToSymbolic(self,feature, value):
-        rank = 0
-        for i in range(len(self.originalData)):
-            if value > self.originalData[i][feature]:
-                rank +=1
-        return (int)(rank / self.values_per_bin[feature])
-
     def  dataToSymbolic(self,data):
         symbolic_data = [[] for i in range(len(data))]
+        
         for idx_feature in range(self.n_features):
+            values = []
+            for vector in data:
+                values.append(vector[idx_feature])
+            values = sorted(values)
+            
+            self.thresholds[idx_feature] = [values[ (1+ x) * ( (int)(self.values_per_bin[idx_feature]) -1 )  ] for x in range(self.bins[idx_feature])]
+                
+                
+
+            
             for i,vector in enumerate(data):
-                symbolic_data[i].append(self.valueToSymbolic(idx_feature,vector[idx_feature]))
+                bin =0
+
+                while vector[idx_feature] > self.thresholds[idx_feature][bin]:
+                    bin +=1
+                    if bin == len(self.thresholds[idx_feature]):
+                        break
+
+                symbolic_data[i].append(bin)
+            
         n_classes = 0
         for i,vector in enumerate(data):
             if vector[-1] not in self.classIntMaping:
@@ -95,10 +111,14 @@ class decisionTree:
             if len(feature) ==1:
                 continue
 
+            #if random.randint(0,100) != 42:
+            #    continue
+
             for value in feature:
                 if len(feature) ==2 and value == feature[1]:
                     #already investigated this option of splitting
                     continue
+
                 dataBranch1 = []
                 dataBranch2 = []
                 for instance in currentData:
@@ -114,6 +134,7 @@ class decisionTree:
                     minEntropy = entropy
                     featureMinEntropy = index
                     valueMinEntropy = value
+
         if featureMinEntropy != -1:
             dataBranch1 = []
             dataBranch2 = []
@@ -146,7 +167,18 @@ class decisionTree:
         if self.tree == None:
             print("Tree is not trained jet (use 'train()'") 
             sys.exit(1)
-        symbolic_vector = [self.valueToSymbolic(i,vector[i]) for i in range(self.n_features)]
+
+        #to symbolic data:
+        symbolic_vector = []
+        for i,value in enumerate(vector):
+            bin =0
+            while value > self.thresholds[i][bin]:
+                bin +=1
+                if bin == len(self.thresholds[i]):
+                    break
+
+            symbolic_vector.append(bin)
+
         return self.classifyRec(self.tree,symbolic_vector )
 
 

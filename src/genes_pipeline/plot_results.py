@@ -17,20 +17,21 @@ if True:
     #PErformance with stopping value = 20
     d = [0.8127340823970037, 0.951310861423221, 0.9538077403245943, 0.9500624219725343, 0.9662921348314607, 0.9500624219725343, 0.9488139825218477, 0.9413233458177278, 0.9388264669163545]
    
-    plt.plot(x, [x*100 for x in a], label = "min size = 1")
-    plt.plot(x, [x*100 for x in c], label = "min size = 10")
-    plt.plot(x, [x*100 for x in d], label = "min size = 20")
+    plt.plot(x, [x*100 for x in a], label = "min size = 1", marker='o')
+    plt.plot(x, [x*100 for x in c], label = "min size = 10", marker='^')
+    plt.plot(x, [x*100 for x in d], label = "min size = 20", marker='s')
 
     plt.legend()
 
     plt.xlabel("N Principal components")
-    plt.ylabel("Test error in %")
+    plt.ylabel("Test accuracy in %")
 
-    plt.title("Test Error for different PC \n bin size = 4 (static)")
+    plt.title("Test accuracy for different PC \n bin size = 4 (static)")
 
     plt.ylim([69,100])
 
     plt.legend()
+    plt.grid()
     plt.show()
 
 if True:
@@ -45,19 +46,20 @@ if True:
     #PErformance with stopping value = 20
     d = [0.6966292134831461, 0.8776529338327091, 0.9588014981273408, 0.9588014981273408, 0.9625468164794008, 0.9425717852684145, 0.9325842696629213, 0.9250936329588015, 0.9338327091136079]
     
-    plt.plot(x, [x*100 for x in a], label = "min size = 1")
-    plt.plot(x, [x*100 for x in c], label = "min size = 10")
-    plt.plot(x, [x*100 for x in d], label = "min size = 20")
+    plt.plot(x, [x*100 for x in a], label = "min size = 1", marker='o')
+    plt.plot(x, [x*100 for x in c], label = "min size = 10", marker='^')
+    plt.plot(x, [x*100 for x in d], label = "min size = 20", marker='s')
 
     plt.legend()
 
     plt.xlabel("N Principal components")
-    plt.ylabel("Test error in %")
+    plt.ylabel("Test accuracy in %")
 
-    plt.title("Test Error for different PC \n bin size = 8 (static)")
+    plt.title("Test accuracy for different PC \n bin size = 8 (static)")
     plt.ylim([69,100])
 
     plt.legend()
+    plt.grid()
     plt.show()
 
 if True:
@@ -72,17 +74,18 @@ if True:
     #PErformance with stopping value = 20
     d = [0.6966292134831461, 0.8776529338327091, 0.9588014981273408, 0.9588014981273408, 0.9625468164794008, 0.9425717852684145, 0.9325842696629213, 0.9250936329588015, 0.9338327091136079]
     
-    plt.plot(x, [x*100 for x in a], label = "min size = 1")
-    plt.plot(x, [x*100 for x in c], label = "min size = 10")
-    plt.plot(x, [x*100 for x in d], label = "min size = 20")
+    plt.plot(x, [x*100 for x in a], label = "min size = 1", marker='o')
+    plt.plot(x, [x*100 for x in c], label = "min size = 10", marker='^')
+    plt.plot(x, [x*100 for x in d], label = "min size = 20", marker='s')
 
     plt.legend()
 
     plt.xlabel("N Principal components")
-    plt.ylabel("Test error in %")
+    plt.ylabel("Test accuracy in %")
 
-    plt.title("Test Error for different PC \n bin size is adaptive")
+    plt.title("Test accuracy for different PC \n bin size is adaptive")
     plt.ylim([69,100])
 
     plt.legend()
+    plt.grid()
     plt.show()
