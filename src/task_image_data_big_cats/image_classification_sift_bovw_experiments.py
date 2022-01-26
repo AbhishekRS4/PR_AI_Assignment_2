@@ -7,7 +7,7 @@ from logger_utils import CSVWriter
 from sklearn.model_selection import cross_validate
 from learning_utils import get_standard_scaler, get_tfidf_transformer, get_accuracy_scoring_fn
 from learning_utils import get_learning_pipeline, compute_classification_metrics_test_data, print_classification_metrics
-from learning_utils import get_knn_classifier, get_adaboost_classifier, get_gaussian_nb_classifier, get_grid_search_classifier, get_svc_classifier
+from learning_utils import get_knn_classifier, get_adaboost_classifier, get_gaussian_nb_classifier, get_grid_search_classifier, get_svc_classifier, get_voting_classifier
 
 def test_knn_classifier_sift(dir_sift_data="sift_features/", file_csv_gs_cv="image_classification_gs_cv_knn.csv"):
     file_csv_gs_cv = os.path.join(dir_sift_data, file_csv_gs_cv)
@@ -240,6 +240,94 @@ def do_gs_cv_image_classification_sift(dir_sift_data="sift_features/", which_cla
                 + [round(learning_pipeline["grid_search"].best_score_, 4)]
             csv_writer.write_row(row_)
     csv_writer.close()
+    return
+
+def do_ensemble_experiments(is_same_visual_words=True):
+    if is_same_visual_words:
+        do_ensemble_experiments_same_visual_words()
+    else:
+        do_ensemble_experiments_different_visual_words()
+    return
+
+def do_ensemble_experiments_same_visual_words(dir_sift_data="sift_features/"):
+    file_knn = os.path.join(dir_sift_data, "image_classification_test_knn.csv")
+    file_svc = os.path.join(dir_sift_data, "image_classification_test_svc.csv")
+    file_adaboost = os.path.join(dir_sift_data, "image_classification_test_adaboost.csv")
+
+    df_knn = pd.read_csv(file_knn)
+    df_svc = pd.read_csv(file_svc)
+    df_adaboost = pd.read_csv(file_adaboost)
+
+    print(df_svc.columns)
+
+    df_knn = df_knn[df_knn.preprocess == "tf_idf"]
+    df_svc = df_svc[df_svc.preprocess == "tf_idf"]
+    df_adaboost = df_adaboost[df_adaboost.preprocess == "tf_idf"]
+
+    train_y = np.load(os.path.join(dir_sift_data, "train_labels.npy"))
+    test_y = np.load(os.path.join(dir_sift_data, "test_labels.npy"))
+
+    file_log_results = "image_classification_ensemble_same_visual_words.csv"
+    test_col_names = [
+        "features", "num_visual_words", "preprocess", "ensemble", "test_acc", "test_f1",
+    ]
+    csv_writer = CSVWriter(os.path.join(dir_sift_data, file_log_results), test_col_names)
+
+    for idx_clf in range(len(df_knn)):
+        num_visual_words = df_knn.iloc[idx_clf].num_visual_words
+        train_x = np.load(os.path.join(dir_sift_data, f"train_sift_{num_visual_words}.npy"))
+        test_x = np.load(os.path.join(dir_sift_data, f"test_sift_{num_visual_words}.npy"))
+
+        metric = df_knn.iloc[idx_clf].metric
+        n_neighbors = df_knn.iloc[idx_clf].n_neighbors
+        weights = df_knn.iloc[idx_clf].weights
+
+        #print(df_svc.iloc[idx_clf])
+        C = df_svc.iloc[idx_clf].C
+        kernel = df_svc.iloc[idx_clf].kernel
+        degree = df_svc.iloc[idx_clf].degree
+        gamma = df_svc.iloc[idx_clf].gamma
+
+        preprocess = df_adaboost.iloc[idx_clf].preprocess
+        criterion = df_adaboost.iloc[idx_clf].base_estimator__criterion
+        max_depth = df_adaboost.iloc[idx_clf].base_estimator__max_depth
+        min_samples_split = df_adaboost.iloc[idx_clf].base_estimator__min_samples_split
+        splitter = df_adaboost.iloc[idx_clf].base_estimator__splitter
+        learning_rate = df_adaboost.iloc[idx_clf].learning_rate
+        n_estimators = df_adaboost.iloc[idx_clf].n_estimators
+
+        preprocess == "tf_idf"
+        preprocessor = get_tfidf_transformer()
+        train_x_tf_idf = preprocessor.fit_transform(train_x)
+        test_x_tf_idf = preprocessor.transform(test_x)
+
+        classifier_knn = get_knn_classifier(n_neighbors=n_neighbors, metric=metric, weights=weights)
+        classifier_svc = get_svc_classifier(C=C, kernel=kernel, degree=degree, gamma=gamma, probability=True)
+        classifier_adaboost = get_adaboost_classifier(
+            n_estimators=n_estimators, learning_rate=learning_rate, criterion=criterion,
+            max_depth=max_depth, min_samples_split=min_samples_split, splitter=splitter
+        )
+
+        pipeline_knn = ("knn", classifier_knn)
+        pipeline_svc = ("svc", classifier_svc)
+        pipeline_adaboost = ("adaboost", classifier_adaboost)
+
+        list_ensemble_models = [pipeline_knn, pipeline_svc, pipeline_adaboost]
+        ensemble_pipeline = get_voting_classifier(list_ensemble_models, voting="hard")
+
+        ensemble_pipeline.fit(train_x_tf_idf, train_y)
+        test_pred = ensemble_pipeline.predict(test_x_tf_idf)
+        test_acc, test_f1, test_roc_auc, test_cm = compute_classification_metrics_test_data(test_y, test_pred)
+        print_classification_metrics(test_acc, test_f1, test_roc_auc, test_cm)
+        row_ = [
+            "sift", num_visual_words, preprocess, "knn_svc_adaboost",
+            round(test_acc, 4), round(test_f1, 4)
+        ]
+        csv_writer.write_row(row_)
+    csv_writer.close()
+    return
+
+def do_ensemble_experiments_different_visual_words(dir_sift_data="sift_features/"):
     return
 
 """
