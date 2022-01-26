@@ -1,15 +1,16 @@
 import numpy as np
 from sklearn.svm import SVC
+from sklearn.cluster import DBSCAN
 from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, make_scorer, roc_auc_score
+from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, make_scorer, roc_auc_score, silhouette_score
 
 
 def split_data(x, y, test_size=0.2, random_state=4):
@@ -91,3 +92,15 @@ def print_classification_metrics(acc, f1, roc_auc, cm):
     print(cm)
     print()
     return
+
+def get_dbscan_clustering_algo(eps):
+    dbscan_clustering_algo = DBSCAN(eps=eps)
+    return dbscan_clustering_algo
+
+def compute_silhouette_score(X, labels):
+    sil_score = silhouette_score(X, labels)
+    return sil_score
+
+def get_nearest_neighbors(n_neighbors=5):
+    nearest_neighbors = NearestNeighbors(n_neighbors=n_neighbors)
+    return nearest_neighbors
