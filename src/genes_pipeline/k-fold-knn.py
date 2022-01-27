@@ -9,9 +9,17 @@ from sklearn.neighbors import KNeighborsClassifier
 
 PATH = "Genes/data.csv"
 
-N_PC = [2,5,10,20,50]
-K = 10 #for k fold cross validation
-N_NEIGHBOURS = [1,10,30] # for knn classifier
+PATH = "Genes/data.csv"
+
+#number of k-neares neighbours
+KNN = 10
+
+#number of principal components
+N_PC = [30,40,50]
+
+#k for k-fold cross validation
+K = 10
+
 
 
 def getData(path):
@@ -49,7 +57,9 @@ def getData(path):
     return data, labels
 
 print("Loading data...")
+
 data, labels = getData(PATH)
+
 print("...finished loading data")
 
 
@@ -58,50 +68,37 @@ testing = []
 size_training = len(data) / K
 
 distinct_lables = ['PRAD', 'LUAD', 'BRCA', 'KIRC', 'COAD']
-confusion_matrix = [[0,0,0,0,0] for x in range(5)]
 
-performance = [0 for x in N_PC]
-
-results = [ [0 for y in range(len(N_PC))] for x in range(len(N_NEIGHBOURS))]
 for i, n_components in enumerate(N_PC):
+    confusion_matrix = [[0,0,0,0,0] for x in range(5)]
+    performance = 0
 
-    print("PCA with {0} pcs...".format(n_components))
     pca = PCA(n_components=n_components)
     reduced_data_np = pca.fit(data).transform(data)
-    print("...finished pca")
 
     reduced_data = reduced_data_np.tolist()
     for j,value in enumerate(reduced_data):
         value.append(labels[j])
     random.shuffle(reduced_data) #shuffle data
+    for fold_position in range(K):
+        testing  = reduced_data[ int(fold_position * size_training) : int((fold_position +1 ) * size_training)]
 
-    for j,n_neigh in enumerate(N_NEIGHBOURS):
-        for fold_position in range(K):
-            testing  = reduced_data[ int(fold_position * size_training) : int((fold_position +1 ) * size_training)]
+        training = reduced_data[: int(fold_position * size_training)] +  reduced_data[int((fold_position+1) * size_training):]
+        
+        knn = KNeighborsClassifier(n_neighbors=KNN)
+        knn.fit( [x[:-1] for x in training],  [x[-1] for x in training])
 
-            training = reduced_data[: int(fold_position * size_training)] +  reduced_data[int((fold_position+1) * size_training):]
-            
-            knn = KNeighborsClassifier(n_neighbors=n_neigh)
-            knn.fit( [x[:-1] for x in training],  [x[-1] for x in training])
+        for value in testing:
+            i1 = distinct_lables.index(value[-1])
+            i2 = distinct_lables.index(knn.predict([value[:-1]])[0])
+            confusion_matrix[i1][i2] +=1
 
-
-            for value in testing:
-                if knn.predict([value[:-1]])[0] == value[-1]:
-                    results[j][i] += 1
+            if knn.predict([value[:-1]])[0]== value[-1]:
+                performance+= 1
     
-markers = ['o', '^', 's','v', '<','>','1','2','3','4' ]
-for i,r in enumerate(results):
-    plt.plot(N_PC,[(x*100) / len(data)  for x in r], label = "k = " + str(N_NEIGHBOURS[i]), marker = markers[i] )
-    print([x / len(data)  for x in r])
+    performance /= len(reduced_data)
 
-plt.legend()
-
-plt.xlabel("N Principal components")
-plt.ylabel("Test accuracy in %")
-
-plt.title("Test accuracy for KNN")
-
-plt.legend()
-plt.grid()
-plt.show()
-
+    print("Accuracy using {0} principal components:".format(n_components))
+    print(performance*100)
+    print("confusion matrix:")
+    print(confusion_matrix)

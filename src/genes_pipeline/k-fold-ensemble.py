@@ -14,10 +14,15 @@ from sklearn.neighbors import KNeighborsClassifier
 
 PATH = "Genes/data.csv"
 
-# nPC, trees, bins, min size
+#Settings for each forest:
+# nPC, n trees, bins, min size
 FORESTS_SETTINGS = [[4,10,4,1],[5,10,4,1],[6,10,4,1],[7,10,4,1],[8,10,8,20],[4,10,8,20],[5,10,8,20],[6,10,8,20],[7,10,8,20],[8,10,8,20]]
+
+#Settings for each knn-classifier
 # nPC, K
 KNN_SETTINGS = [[30,1],[30,10],[40,1],[40,10],[50,1],[50,10],[60,1],[60,10],[70,1],[70,10]]
+
+# k for k-fold cross validation
 K = 10
 
 def getData(path):
@@ -114,7 +119,7 @@ for fold_position in range(K):
 
 performance /= len(data)
 
+print("performance for ensemble:")
 print(performance)
 
-#0.9550561797752809
 
