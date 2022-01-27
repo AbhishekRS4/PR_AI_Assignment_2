@@ -174,8 +174,10 @@ class decisionTree:
             bin =0
             while value > self.thresholds[i][bin]:
                 bin +=1
-                if bin == len(self.thresholds[i]):
+                if bin >= len(self.thresholds[i]):
                     break
+
+
 
             symbolic_vector.append(bin)
 
