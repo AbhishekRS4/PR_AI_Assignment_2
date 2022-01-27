@@ -314,6 +314,7 @@ def do_ensemble_experiments_same_visual_words(dir_sift_data="sift_features/"):
         ensemble_pipeline.fit(train_x_tf_idf, train_y)
         test_pred = ensemble_pipeline.predict(test_x_tf_idf)
         test_acc, test_f1, test_roc_auc, test_cm = compute_classification_metrics_test_data(test_y, test_pred)
+        print(f"Num visual words : {num_visual_words}")
         print_classification_metrics(test_acc, test_f1, test_roc_auc, test_cm)
         row_ = [
             "sift", num_visual_words, preprocess, "knn_svc_adaboost",
