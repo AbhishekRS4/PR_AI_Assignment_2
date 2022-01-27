@@ -1,5 +1,8 @@
 # Image Classification and Clustering using Classical Pattern Recognition methods
 
+### Dependencies
+* The python package dependencies used can be found in [requirements.txt](requirements.txt).
+
 ### Feature Extraction and Dimension reduction
 1. For feature generation, run [image_features_generation.ipynb](image_features_generation.ipynb). This notebook saves the generated dimension reduced features as npy files.
 2. For visualizing the features, run [image_feature_visualizer.ipynb](image_feature_visualizer.ipynb).
