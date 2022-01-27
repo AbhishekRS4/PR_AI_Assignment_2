@@ -19,7 +19,7 @@ def do_image_clustering_experiments(start_num_visual_words=5, end_num_visual_wor
 
         preprocess = "tf_idf"
         preprocessor = get_tfidf_transformer()
-        for eps in np.arange(0.3, 0.46, 0.005):
+        for eps in np.arange(0.3, 0.45, 0.005):
             print(f"Num visual words : {num_visual_words}")
             try:
                 dbscan_clustering_algo = get_dbscan_clustering_algo(eps=eps)
