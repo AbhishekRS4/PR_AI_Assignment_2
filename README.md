@@ -1,1 +1,7 @@
-# PR_AI_Assignment_2
+# Pattern Recognition for AI - Assignment 2
+
+### Team Members
+* Abhishek
+* Lukas
+* Luke
+* Tessa
